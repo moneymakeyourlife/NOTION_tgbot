@@ -1,5 +1,6 @@
-from aiogram import Router, F, Bot
 from aiogram.types import Message
+from aiogram import Router, F, Bot
+from aiogram.types.input_file import FSInputFile
 
 from database.db import db
 from keyboards.inline.user import get_main_menu
@@ -19,8 +20,12 @@ async def start_func(msg: Message, bot: Bot):
     else:
         await db.updated_username(user_id, username)
 
-    await msg.answer(
-        text=f"👋 Привет, <b>{msg.from_user.full_name}</b>",
+    image = FSInputFile("images/mainMenu.jpg")
+
+    await bot.send_photo(
+        chat_id=msg.from_user.id,
+        photo=image,
+        caption=f"👋 Привет, <b>{msg.from_user.full_name}</b>",
         reply_markup=await get_main_menu(),
         parse_mode="html",
     )

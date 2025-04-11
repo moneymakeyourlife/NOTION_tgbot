@@ -1,0 +1,82 @@
+from aiogram import Router, F, Bot
+from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import StatesGroup, State
+from aiogram.types import CallbackQuery, Message
+
+from database.db import db
+from keyboards.inline.user import get_accept_cancel_keyboard, get_back_to_daily_menu
+
+router = Router()
+
+
+class AddDailyTask(StatesGroup):
+    waiting_for_task_text = State()
+    waiting_for_accept = State()
+
+
+@router.callback_query(F.data == "add_daily_task")
+async def add_daily_task(call: CallbackQuery, bot: Bot, state: FSMContext):
+    await call.answer()
+    await call.message.delete()
+
+    msg = await bot.send_message(
+        chat_id=call.from_user.id,
+        text="✏️ Введите текст ежедневного задания",
+    )
+
+    await state.update_data({"msg_id": msg.message_id})
+    await state.set_state(AddDailyTask.waiting_for_task_text)
+
+
+@router.message(AddDailyTask.waiting_for_task_text)
+async def process_task_text(message: Message, state: FSMContext, bot: Bot):
+    task_text = message.text
+    data = await state.get_data()
+
+    await bot.delete_message(
+        chat_id=message.from_user.id,
+        message_id=message.message_id,
+    )
+
+    await state.update_data(task_text=task_text)
+
+    await bot.edit_message_text(
+        text=f"✅ Вы ввели текст задания:\n\n<b>{task_text}</b>\n\n❓ Вы хотите сохранить его?",
+        chat_id=message.from_user.id,
+        message_id=data.get("msg_id"),
+        reply_markup=await get_accept_cancel_keyboard(),
+        parse_mode="HTML",
+    )
+
+    await state.set_state(AddDailyTask.waiting_for_accept)
+
+
+@router.callback_query(
+    AddDailyTask.waiting_for_accept,
+    F.data.in_({"accept", "cancel"}),
+)
+async def process_accept_cancel(call: CallbackQuery, state: FSMContext, bot: Bot):
+    user_data = await state.get_data()
+    task_text = user_data.get("task_text")
+
+    if call.data == "accept":
+        user_id = call.from_user.id
+
+        await db.create_daily_task(user_id=user_id, task_text=task_text)
+
+        await bot.edit_message_text(
+            text="✅ Вы успешно добавили задание",
+            chat_id=call.from_user.id,
+            message_id=call.message.message_id,
+            reply_markup=await get_back_to_daily_menu(),
+        )
+
+    else:
+        await bot.edit_message_text(
+            text="❌ Вы отменили добавление задания",
+            chat_id=call.from_user.id,
+            message_id=call.message.message_id,
+            reply_markup=await get_back_to_daily_menu(),
+        )
+
+    await state.clear()

@@ -1,5 +1,6 @@
-from sqlalchemy import Column, Integer, Float, String
 from models.base import Base
+from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, Float, String
 
 
 class User(Base):
@@ -9,3 +10,7 @@ class User(Base):
     first_name = Column(String)
     username = Column(String)
     health_balance = Column(Float, default=0)
+
+    tasks = relationship(
+        "DailyTask", back_populates="user", cascade="all, delete-orphan"
+    )
