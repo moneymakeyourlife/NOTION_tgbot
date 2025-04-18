@@ -15,7 +15,7 @@ router = Router()
 
 
 @router.callback_query(F.data == "remove_daily_task")
-async def remove_daily_task(call: CallbackQuery, bot: Bot, state: FSMContext):
+async def open_remove_daily_task(call: CallbackQuery, bot: Bot, state: FSMContext):
     user_id = call.from_user.id
 
     daily_user = await db.get_daily_tasks(user_id)
@@ -27,7 +27,7 @@ async def remove_daily_task(call: CallbackQuery, bot: Bot, state: FSMContext):
             [
                 InlineKeyboardButton(
                     text=task.daily_task,
-                    callback_data=f"remove_{task.id}",
+                    callback_data=f"del_daily_{task.id}",
                 )
             ]
         )
@@ -35,15 +35,19 @@ async def remove_daily_task(call: CallbackQuery, bot: Bot, state: FSMContext):
         [
             InlineKeyboardButton(
                 text="⬅️ Назад",
-                callback_data="back_to_daily_menu",
+                callback_data="back_to_daily",
             )
         ]
     )
     keyboard = InlineKeyboardMarkup(inline_keyboard=kb)
 
-    await bot.edit_message_text(
-        text="❗️ Выберите задачу, которую хотите удалить",
+    await bot.delete_message(
         chat_id=call.from_user.id,
         message_id=call.message.message_id,
+    )
+
+    await bot.send_message(
+        chat_id=call.from_user.id,
+        text="❗️ Выберите задачу, которую хотите удалить",
         reply_markup=keyboard,
     )
