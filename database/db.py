@@ -98,6 +98,13 @@ class Database:
             )
             return result.scalars().all()
 
+    async def get_daily_task(self, task_id: int) -> DailyTask | None:
+        async with self.get_session() as session:
+            result = await session.execute(
+                select(DailyTask).where(DailyTask.id == task_id)
+            )
+            return result.scalar_one_or_none()
+
     async def mark_task_done(self, task_id: int):
         async with self.get_session() as session:
             await session.execute(
