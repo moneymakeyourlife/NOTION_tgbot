@@ -1,9 +1,12 @@
+from pytz import timezone
+from datetime import datetime
 from sqlalchemy import select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 
 from models.base import Base
 from utils.logger import logger
+from models.daily_history import DailyHistory
 
 from models.user import User
 from models.daily_task import DailyTask
@@ -83,6 +86,28 @@ class Database:
     ##########      Daily tasks         ##########
     ##########                          ##########
 
+    # set is_done to False for all tasks
+    async def cleanup_daily_tasks(self):
+        async with self.get_session() as session:
+            tasks_result = await session.execute(select(DailyTask))
+            tasks = tasks_result.scalars().all()
+
+            now_date = datetime.now(timezone("Europe/Kyiv")).strftime("%Y-%m-%d")
+
+            for task in tasks:
+                history = DailyHistory(
+                    user_id=task.user_id,
+                    task_id=task.id,
+                    date=now_date,
+                    is_done=task.is_done,
+                )
+                session.add(history)
+
+            await session.execute(update(DailyTask).values(is_done=False))
+            await session.commit()
+
+            logger.info("Daily tasks cleaned up and history saved")
+
     async def create_daily_task(self, user_id: int, task_text: str):
         async with self.get_session() as session:
             task = DailyTask(user_id=user_id, daily_task=task_text)
@@ -105,10 +130,12 @@ class Database:
             )
             return result.scalar_one_or_none()
 
-    async def mark_task_done(self, task_id: int):
+    async def mark_task_done(self, task_id: int, done_status: bool):
         async with self.get_session() as session:
             await session.execute(
-                update(DailyTask).where(DailyTask.id == task_id).values(is_done=True)
+                update(DailyTask)
+                .where(DailyTask.id == task_id)
+                .values(is_done=done_status)
             )
             await session.commit()
 

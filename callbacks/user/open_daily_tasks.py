@@ -1,9 +1,11 @@
 from aiogram import Router, F, Bot
 from aiogram.types import CallbackQuery
-from aiogram.types.input_file import FSInputFile
 
 from database.db import db
 from keyboards.inline.user import get_daily_menu
+
+from config import DAILY_IMAGE
+
 
 router = Router()
 
@@ -31,11 +33,9 @@ async def open_daily_tasks(call: CallbackQuery, bot: Bot):
             else:
                 answ_text += f"📝 {task.daily_task}\n"
 
-    image = FSInputFile("images/daily_tasks.jpg")
-
     await bot.send_photo(
         chat_id=call.from_user.id,
-        photo=image,
+        photo=DAILY_IMAGE,
         caption=answ_text,
         reply_markup=await get_daily_menu(),
     )

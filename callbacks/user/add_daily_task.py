@@ -1,17 +1,12 @@
 from aiogram import Router, F, Bot
 from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import CallbackQuery, Message
 
 from database.db import db
+from states.user import AddDailyTask
 from keyboards.inline.user import get_accept_cancel_keyboard, get_back_to_daily_menu
 
 router = Router()
-
-
-class AddDailyTask(StatesGroup):
-    waiting_for_task_text = State()
-    waiting_for_accept = State()
 
 
 @router.callback_query(F.data == "add_daily_task")

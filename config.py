@@ -1,4 +1,10 @@
-TOKEN = "7250446074:AAFh4FZ7aDWxGEZmZZOzNPnUKyK1osVm7bI"
-ADMIN_ID = 7742837753
+from dotenv import load_dotenv
+import os
 
-DB_PATH = "database/database.db"
+load_dotenv()
+
+TOKEN = os.getenv("TOKEN")
+ADMIN_ID = int(os.getenv("ADMIN_ID"))
+DB_PATH = os.getenv("DB_PATH")
+MAIN_IMAGE = os.getenv("MAIN_IMAGE")
+DAILY_IMAGE = os.getenv("DAILY_IMAGE")

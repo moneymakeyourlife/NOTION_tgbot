@@ -1,7 +1,6 @@
 from aiogram import Router, F, Bot
 from aiogram.types import (
     CallbackQuery,
-    Message,
     InlineKeyboardButton,
     InlineKeyboardMarkup,
 )
@@ -54,7 +53,6 @@ async def open_remove_daily_task(call: CallbackQuery, bot: Bot):
 async def is_remove_daily_task(call: CallbackQuery, bot: Bot):
     task_id = int(call.data.split("_")[2])
     task_info = await db.get_daily_task(task_id)
-    user_id = call.from_user.id
 
     await bot.edit_message_text(
         chat_id=call.from_user.id,
@@ -84,7 +82,6 @@ async def is_remove_daily_task(call: CallbackQuery, bot: Bot):
 async def confirm_remove_daily_task(call: CallbackQuery, bot: Bot):
     task_id = int(call.data.split("_")[3])
     task_info = await db.get_daily_task(task_id)
-    user_id = call.from_user.id
 
     await bot.edit_message_text(
         chat_id=call.from_user.id,

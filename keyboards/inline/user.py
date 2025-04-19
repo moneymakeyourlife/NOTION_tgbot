@@ -35,6 +35,11 @@ async def get_daily_menu() -> InlineKeyboardMarkup:
             InlineKeyboardButton(text="➕ Добавить", callback_data="add_daily_task"),
             InlineKeyboardButton(text="➖ Удалить", callback_data="remove_daily_task"),
         ],
+        [
+            InlineKeyboardButton(
+                text="✅ Отметить выполненые", callback_data="done_daily_task"
+            ),
+        ],
         [InlineKeyboardButton(text="📊 Статистика", callback_data="daily_statistic")],
         [InlineKeyboardButton(text="🔙 Главное меню", callback_data="back_to_main")],
     ]
