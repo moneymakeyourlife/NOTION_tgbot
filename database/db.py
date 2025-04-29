@@ -174,5 +174,16 @@ class Database:
                         await self.mark_task_done(task.id, False)
             logger.info("Daily tasks moved to history")
 
+    async def daily_user_remainder(self, user_id: int):
+        async with self.get_session() as session:
+            user_tasks = await self.get_daily_tasks(user_id)
+            unfinished_tasks = []
+
+            for task in user_tasks:
+                if not task.is_done:
+                    unfinished_tasks.append(task)
+
+            return unfinished_tasks
+
 
 db = Database()

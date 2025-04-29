@@ -15,11 +15,13 @@ from callbacks.user import (
     add_daily_task,
     open_daily_tasks,
     remove_daily_task,
+    daily_ok,
 )
 
 from database.db import db
 from config import TOKEN, ADMIN_ID
 from utils.bot_commands import set_commands
+from utils.remainders import shchedule_daily_remainders
 
 
 async def scheduled_task(bot: Bot):
@@ -51,11 +53,15 @@ async def main():
         add_daily_task.router,
         remove_daily_task.router,
         set_done_daily.router,
+        daily_ok.router,
     )
 
     scheduler = AsyncIOScheduler(timezone=timezone("Europe/Kyiv"))
     scheduler.add_job(scheduled_task, CronTrigger(hour=0, minute=0), args=[bot])
     scheduler.add_job(db.back_daily_to_history, CronTrigger(hour=23, minute=59))
+    scheduler.add_job(
+        shchedule_daily_remainders, CronTrigger(hour="12,17,22", minute=17), args=[bot]
+    )
     scheduler.start()
 
     await bot.delete_webhook(drop_pending_updates=True)

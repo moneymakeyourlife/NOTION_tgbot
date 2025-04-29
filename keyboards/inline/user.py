@@ -58,3 +58,16 @@ async def get_accept_cancel_keyboard() -> InlineKeyboardMarkup:
 
     kb = InlineKeyboardMarkup(inline_keyboard=kb_btns, resize_keyboard=True)
     return kb
+
+
+async def get_daily_ok() -> InlineKeyboardMarkup:
+    kb_btns = [
+        [
+            InlineKeyboardButton(
+                text="💪 Постараюсь выполнить!", callback_data="ok_daily"
+            ),
+        ]
+    ]
+
+    kb = InlineKeyboardMarkup(inline_keyboard=kb_btns, resize_keyboard=True)
+    return kb
