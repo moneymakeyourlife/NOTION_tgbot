@@ -1,5 +1,6 @@
 from aiogram import Router, F, Bot
 from aiogram.types import CallbackQuery
+from aiogram.types.input_file import FSInputFile
 
 from keyboards.inline.user import get_daily_menu, get_main_menu
 
@@ -18,9 +19,11 @@ async def back_to_main(call: CallbackQuery, bot: Bot):
         message_id=call.message.message_id,
     )
 
+    photo = FSInputFile("images/mainMenu.jpg")
+
     await bot.send_photo(
         chat_id=call.from_user.id,
-        photo=MAIN_IMAGE,
+        photo=photo,
         caption=f"👋 Привет, <b>{call.from_user.full_name}</b>",
         reply_markup=await get_main_menu(),
         parse_mode="html",
@@ -48,6 +51,8 @@ async def back_to_daily(call: CallbackQuery, bot: Bot):
                 answ_text += f"✅ {task.daily_task}\n"
             else:
                 answ_text += f"📝 {task.daily_task}\n"
+
+    photo = FSInputFile("images/daily_tasks.jpg")
 
     await bot.send_photo(
         chat_id=call.from_user.id,
