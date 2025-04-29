@@ -13,9 +13,7 @@ router = Router()
 @router.callback_query(F.data == "remove_daily_task")
 async def open_remove_daily_task(call: CallbackQuery, bot: Bot):
     user_id = call.from_user.id
-
     daily_user = await db.get_daily_tasks(user_id)
-
     kb = []
 
     for task in daily_user:
@@ -42,9 +40,14 @@ async def open_remove_daily_task(call: CallbackQuery, bot: Bot):
         message_id=call.message.message_id,
     )
 
+    if len(daily_user) == 0:
+        answ_text = "❗️ У вас нет задач для удаления"
+    else:
+        answ_text = "❗️ Выберите задачу, которую хотите удалить"
+
     await bot.send_message(
         chat_id=call.from_user.id,
-        text="❗️ Выберите задачу, которую хотите удалить",
+        text=answ_text,
         reply_markup=keyboard,
     )
 
