@@ -56,6 +56,11 @@ class Database:
 
             logger.info(f"User {user_id} created")
 
+    async def get_users(self) -> list[User]:
+        async with self.get_session() as session:
+            result = await session.execute(select(User))
+            return result.scalars().all()
+
     async def get_user(self, user_id: int) -> User | None:
         async with self.get_session() as session:
             result = await session.execute(select(User).where(User.user_id == user_id))
@@ -147,6 +152,27 @@ class Database:
             await session.commit()
 
             logger.info(f"Task {task_id} deleted")
+
+    async def back_daily_to_history(self):
+        async with self.get_session() as session:
+            users = await self.get_users()
+            for user in users:
+                all_tasks = await self.get_daily_tasks(user.user_id)
+                for task in all_tasks:
+                    if task.is_done:
+                        history = DailyHistory(
+                            user_id=user.user_id,
+                            task_id=task.id,
+                            date=datetime.now(timezone("Europe/Kyiv")).strftime(
+                                "%Y-%m-%d"
+                            ),
+                            is_done=True,
+                        )
+                        session.add(history)
+                        await session.commit()
+
+                        await self.mark_task_done(task.id, False)
+            logger.info("Daily tasks moved to history")
 
 
 db = Database()
