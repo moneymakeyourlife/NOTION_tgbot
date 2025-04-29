@@ -60,7 +60,7 @@ async def main():
     scheduler.add_job(scheduled_task, CronTrigger(hour=0, minute=0), args=[bot])
     scheduler.add_job(db.back_daily_to_history, CronTrigger(hour=23, minute=59))
     scheduler.add_job(
-        shchedule_daily_remainders, CronTrigger(hour="12,17,22", minute=17), args=[bot]
+        shchedule_daily_remainders, CronTrigger(hour="12,17,22", minute=0), args=[bot]
     )
     scheduler.start()
 

@@ -50,12 +50,8 @@ async def open_remove_daily_task(call: CallbackQuery, bot: Bot, state: FSMContex
     )
     keyboard = InlineKeyboardMarkup(inline_keyboard=kb)
 
-    await bot.delete_message(
-        chat_id=call.from_user.id,
+    await bot.edit_message_text(
         message_id=call.message.message_id,
-    )
-
-    await bot.send_message(
         chat_id=call.from_user.id,
         text="❗️ Выберите задачи, которые хотите отметить как выполненные",
         reply_markup=keyboard,

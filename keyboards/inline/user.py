@@ -4,6 +4,7 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 async def get_main_menu() -> InlineKeyboardMarkup:
     kb_btns = [
         [InlineKeyboardButton(text="‼️ Ежедневки", callback_data="daily_tasks")],
+        [InlineKeyboardButton(text="⚖️ Недельные", callback_data="weekly_tasks")],
         [InlineKeyboardButton(text="👤 Профиль", callback_data="profile")],
     ]
 

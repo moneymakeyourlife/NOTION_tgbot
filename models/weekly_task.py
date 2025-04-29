@@ -3,12 +3,12 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
 
 
-class DailyTask(Base):
-    __tablename__ = "daily_tasks"
+class WeeklyTask(Base):
+    __tablename__ = "weekly_tasks"
 
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.user_id"))
-    daily_task = Column(String)
+    weekly_task = Column(String)
     is_done = Column(Boolean, default=False)
 
-    user = relationship("User", back_populates="tasks")
+    # user = relationship("User", back_populates="tasks")
