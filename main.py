@@ -53,8 +53,6 @@ async def main():
         set_done_daily.router,
     )
 
-    # await scheduled_task(bot)
-
     scheduler = AsyncIOScheduler(timezone=timezone("Europe/Kyiv"))
     scheduler.add_job(scheduled_task, CronTrigger(hour=0, minute=0), args=[bot])
     scheduler.start()

@@ -3,8 +3,8 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 async def get_main_menu() -> InlineKeyboardMarkup:
     kb_btns = [
-        [InlineKeyboardButton(text="👤 Профиль", callback_data="profile")],
         [InlineKeyboardButton(text="‼️ Ежедневки", callback_data="daily_tasks")],
+        [InlineKeyboardButton(text="👤 Профиль", callback_data="profile")],
     ]
 
     kb = InlineKeyboardMarkup(inline_keyboard=kb_btns, resize_keyboard=True)
