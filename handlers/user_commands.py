@@ -16,6 +16,7 @@ async def start_func(msg: Message, bot: Bot):
     user_info = await db.get_user(user_id)
     if user_info is None:
         await db.create_user(user_id, first_name, username)
+        await db.add_user_levels(user_id)
     else:
         await db.updated_username(user_id, username)
 

@@ -59,9 +59,18 @@ async def main():
     scheduler = AsyncIOScheduler(timezone=timezone("Europe/Kyiv"))
     scheduler.add_job(scheduled_task, CronTrigger(hour=0, minute=0), args=[bot])
     scheduler.add_job(db.back_daily_to_history, CronTrigger(hour=23, minute=59))
+
+    # ЕЖЕДНЕВНЫЕ НАПОМИНАНИЯ
     scheduler.add_job(
-        shchedule_daily_remainders, CronTrigger(hour="12,17,22", minute=0), args=[bot]
+        shchedule_daily_remainders, CronTrigger(hour=12, minute=0), args=[bot]
     )
+    scheduler.add_job(
+        shchedule_daily_remainders, CronTrigger(hour=17, minute=0), args=[bot]
+    )
+    scheduler.add_job(
+        shchedule_daily_remainders, CronTrigger(hour=22, minute=0), args=[bot]
+    )
+
     scheduler.start()
 
     await bot.delete_webhook(drop_pending_updates=True)

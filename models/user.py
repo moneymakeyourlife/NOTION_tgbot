@@ -14,3 +14,4 @@ class User(Base):
     tasks = relationship(
         "DailyTask", back_populates="user", cascade="all, delete-orphan"
     )
+    user_levels = relationship("UserLevel", back_populates="user")

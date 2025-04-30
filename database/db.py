@@ -6,10 +6,11 @@ from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 
 from models.base import Base
 from utils.logger import logger
-from models.daily_history import DailyHistory
 
 from models.user import User
+from models.user_level import UserLevel
 from models.daily_task import DailyTask
+from models.daily_history import DailyHistory
 
 from config import DB_PATH
 
@@ -184,6 +185,30 @@ class Database:
                     unfinished_tasks.append(task)
 
             return unfinished_tasks
+
+    ##########                          ##########
+    ##########      User Level          ##########
+    ##########                          ##########
+
+    async def add_user_levels(self, user_id: int):
+        async with self.get_session() as session:
+            task = UserLevel(
+                user_id=user_id,
+                head_level=0.0,
+                body_level=0.0,
+                legs_level=0.0,
+                arms_level=0.0,
+            )
+            session.add(task)
+            await session.commit()
+            logger.info(f"User levels created for user {user_id}")
+
+    async def get_user_levels(self, user_id: int) -> UserLevel | None:
+        async with self.get_session() as session:
+            result = await session.execute(
+                select(UserLevel).where(UserLevel.user_id == user_id)
+            )
+            return result.scalar_one_or_none()
 
 
 db = Database()
