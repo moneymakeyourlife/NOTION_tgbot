@@ -114,9 +114,9 @@ class Database:
 
             logger.info("Daily tasks cleaned up and history saved")
 
-    async def create_daily_task(self, user_id: int, task_text: str):
+    async def create_daily_task(self, user_id: int, task_text: str, date: str):
         async with self.get_session() as session:
-            task = DailyTask(user_id=user_id, daily_task=task_text)
+            task = DailyTask(user_id=user_id, daily_task=task_text, created_date=date)
             session.add(task)
             await session.commit()
 
@@ -209,6 +209,31 @@ class Database:
                 select(UserLevel).where(UserLevel.user_id == user_id)
             )
             return result.scalar_one_or_none()
+
+    async def increment_user_level(
+        self, user_id: int, body_part: str, increment: float
+    ):
+        async with self.get_session() as session:
+            result = await session.execute(
+                select(UserLevel).where(UserLevel.user_id == user_id)
+            )
+            user_levels = result.scalar_one_or_none()
+
+            if not user_levels:
+                return
+
+            current_value = getattr(user_levels, body_part)
+            new_value = current_value + increment
+
+            await session.execute(
+                update(UserLevel)
+                .where(UserLevel.user_id == user_id)
+                .values(**{body_part: new_value})
+            )
+            await session.commit()
+            logger.info(
+                f"User {user_id} {body_part} level incremented by {increment} to {new_value}"
+            )
 
 
 db = Database()

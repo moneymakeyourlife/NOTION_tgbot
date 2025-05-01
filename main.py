@@ -29,7 +29,7 @@ async def scheduled_task(bot: Bot):
     file = FSInputFile("database/database.db")
 
     now_time_and_date = datetime.now(timezone("Europe/Kyiv")).strftime(
-        "%Y-%m-%d %H:%M:%S"
+        "%Y.%m.%d %H:%M:%S"
     )
 
     await bot.send_document(
@@ -56,21 +56,30 @@ async def main():
         daily_ok.router,
     )
 
-    scheduler = AsyncIOScheduler(timezone=timezone("Europe/Kyiv"))
-    scheduler.add_job(scheduled_task, CronTrigger(hour=0, minute=0), args=[bot])
-    scheduler.add_job(db.back_daily_to_history, CronTrigger(hour=23, minute=59))
+    kyiv_tz = timezone("Europe/Kyiv")
 
-    # ЕЖЕДНЕВНЫЕ НАПОМИНАНИЯ
+    scheduler = AsyncIOScheduler(timezone=kyiv_tz)
     scheduler.add_job(
-        shchedule_daily_remainders, CronTrigger(hour=12, minute=0), args=[bot]
+        scheduled_task, CronTrigger(hour=0, minute=0, timezone=kyiv_tz), args=[bot]
     )
     scheduler.add_job(
-        shchedule_daily_remainders, CronTrigger(hour=17, minute=0), args=[bot]
+        db.back_daily_to_history, CronTrigger(hour=23, minute=59, timezone=kyiv_tz)
     )
     scheduler.add_job(
-        shchedule_daily_remainders, CronTrigger(hour=22, minute=0), args=[bot]
+        shchedule_daily_remainders,
+        CronTrigger(hour=12, minute=0, timezone=kyiv_tz),
+        args=[bot],
     )
-
+    scheduler.add_job(
+        shchedule_daily_remainders,
+        CronTrigger(hour=17, minute=0, timezone=kyiv_tz),
+        args=[bot],
+    )
+    scheduler.add_job(
+        shchedule_daily_remainders,
+        CronTrigger(hour=22, minute=0, timezone=kyiv_tz),
+        args=[bot],
+    )
     scheduler.start()
 
     await bot.delete_webhook(drop_pending_updates=True)

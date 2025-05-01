@@ -8,6 +8,7 @@ class DailyTask(Base):
 
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.user_id"))
+    created_date = Column(String)
     daily_task = Column(String)
     is_done = Column(Boolean, default=False)
 

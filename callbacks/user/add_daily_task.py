@@ -1,3 +1,6 @@
+from pytz import timezone
+from datetime import datetime
+
 from aiogram import Router, F, Bot
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
@@ -56,8 +59,9 @@ async def process_accept_cancel(call: CallbackQuery, state: FSMContext, bot: Bot
 
     if call.data == "accept":
         user_id = call.from_user.id
+        now_date = datetime.now(timezone("Europe/Kyiv")).strftime("%Y.%m.%d")
 
-        await db.create_daily_task(user_id=user_id, task_text=task_text)
+        await db.create_daily_task(user_id=user_id, task_text=task_text, date=now_date)
 
         await bot.edit_message_text(
             text="✅ Вы успешно добавили задание",
