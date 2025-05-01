@@ -49,9 +49,16 @@ class Database:
     ##########      User methods        ##########
     ##########                          ##########
 
-    async def create_user(self, user_id: int, first_name: str, username: str):
+    async def create_user(
+        self, reg_date: str, user_id: int, first_name: str, username: str
+    ):
         async with self.get_session() as session:
-            user = User(user_id=user_id, first_name=first_name, username=username)
+            user = User(
+                user_id=user_id,
+                first_name=first_name,
+                username=username,
+                reg_date=reg_date,
+            )
             session.add(user)
             await session.commit()
 

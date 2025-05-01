@@ -156,3 +156,5 @@ cython_debug/
 /.env
 /.env.*
 !**/.env.template
+
+database.db

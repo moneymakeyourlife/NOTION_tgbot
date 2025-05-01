@@ -7,6 +7,7 @@ class User(Base):
     __tablename__ = "users"
 
     user_id = Column(Integer, primary_key=True)
+    reg_date = Column(String)
     first_name = Column(String)
     username = Column(String)
     health_balance = Column(Float, default=0)
